@@ -4,6 +4,11 @@ from database import get_connection
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import aiomysql
+import dummy
+
+restaurantData = dummy.restaurant_data
+reservationData = dummy.reservation_data
+userData = dummy.user_data
 
 app = FastAPI()
 
@@ -29,11 +34,14 @@ class Store(BaseModel):
     x_coordinate: float
     y_coordinate: float
 
+
 class MenuItem(BaseModel):
     idx: int
     store_idx: int
     name: str
     price: int
+
+
 
 @app.get("/stores", response_model=List[Store])
 async def get_stores():
@@ -64,3 +72,31 @@ async def get_store_menu(store_id: int):
                 raise HTTPException(status_code=404, detail="Menu items not found")
     finally:
         connection.close()
+
+@app.get("/stores/{searchData}")
+async def get_stores_item(searchData : str):
+    filtered_data = []
+    for item in restaurantData:
+        if item["classification"] == searchData:
+            filtered_data.append(item)
+    return filtered_data
+
+@app.get("/users/{userId}")
+async def get_profile(userId : int):
+    filtered_data = []
+    for item in userData:
+        if item["id"] == userId:
+            filtered_data.append(item)
+    return filtered_data
+
+@app.get("/users/{userId}/reservation")
+async def get_reservation(userId : int):
+    filtered_data = []
+    temp = ''
+    for item in userData:
+        if item["id"] == userId:
+            temp = item['name']
+    for item in reservationData:
+        if item['name'] == temp:
+            filtered_data.append(item)
+    return filtered_data
