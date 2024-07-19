@@ -6,9 +6,6 @@ from pydantic import BaseModel
 import aiomysql
 import dummy
 
-restaurantData = dummy.restaurant_data
-reservationData = dummy.reservation_data
-userData = dummy.user_data
 
 app = FastAPI()
 
@@ -60,15 +57,16 @@ async def get_store_menu(store_id: int):
 @app.get("/stores/{searchData}")
 async def get_stores_item(searchData : str):
     filtered_data = []
-    for item in restaurantData:
+    for item in dummy.menus:
         if item["classification"] == searchData:
+            item['store_name'] = dummy.getStoreNameFromId(item['store_idx'])
             filtered_data.append(item)
     return filtered_data
 
 @app.get("/users/{userId}")
 async def get_profile(userId : int):
     filtered_data = []
-    for item in userData:
+    for item in dummy.user_data:
         if item["id"] == userId:
             filtered_data.append(item)
     return filtered_data
@@ -77,10 +75,10 @@ async def get_profile(userId : int):
 async def get_reservation(userId : int):
     filtered_data = []
     temp = ''
-    for item in userData:
+    for item in dummy.user_data:
         if item["id"] == userId:
             temp = item['name']
-    for item in reservationData:
+    for item in dummy.reservation_data:
         if item['name'] == temp:
             filtered_data.append(item)
     return filtered_data
