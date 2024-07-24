@@ -1,11 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from typing import List
-from database import get_connection
+from BackEnd.app.db.database import get_connection
+import BackEnd.app.db.dummy as dummy
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import aiomysql
-import dummy
-
 
 app = FastAPI()
 
@@ -30,7 +29,7 @@ class Store(BaseModel):
     name: str
     x_coordinate: float
     y_coordinate: float
-    type: str
+
 
 
 class MenuItem(BaseModel):
@@ -41,8 +40,30 @@ class MenuItem(BaseModel):
 
 @app.get("/stores", response_model=List[Store])
 async def get_stores():
-    return [Store(**row) for row in dummy.store]
-
+    connection = await get_connection()
+    try:
+        async with connection.cursor(aiomysql.DictCursor) as cursor:
+            sql = "SELECT idx, name, lat, lng FROM stores limit 1000"
+            await cursor.execute(sql)
+            result = await cursor.fetchall()
+            if result:
+                stores = []
+                for row in result:
+                    # Handle None values
+                    x_coordinate = row["lat"] if row["lat"] is not None else 0.0
+                    y_coordinate = row["lng"] if row["lng"] is not None else 0.0
+                    store = Store(
+                        idx=row["idx"],
+                        name=row["name"],
+                        x_coordinate=x_coordinate,
+                        y_coordinate=y_coordinate
+                    )
+                    stores.append(store)
+                return stores
+            else:
+                raise HTTPException(status_code=404, detail="Stores not found")
+    finally:
+        connection.close()
 
 @app.get("/stores/{store_id}/menu", response_model=List[MenuItem])
 async def get_store_menu(store_id: int):

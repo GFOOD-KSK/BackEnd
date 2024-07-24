@@ -1,5 +1,5 @@
 import aiomysql
-from config import DATABASE
+from BackEnd.app.core.config import DATABASE
 async def get_connection():
     connection = await aiomysql.connect(
         host=DATABASE['host'],
