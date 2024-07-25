@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from typing import List
-from BackEnd.app.db.database import get_connection
-import BackEnd.app.db.dummy as dummy
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import aiomysql
+
+from app.db import dummy
+from app.db.database import get_connection
 
 app = FastAPI()
 
