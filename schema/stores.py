@@ -15,7 +15,7 @@ class MenuItem(BaseModel):
     store_idx: int
     name: str
     price: int
-    food_tyoe : str
+    food_type : str
 
 class MenuOverlayItem(BaseModel): # 오버레이 조회
     name: str
