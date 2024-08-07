@@ -3,12 +3,11 @@ import aiomysql
 from fastapi import HTTPException
 from db.session import get_connection
 
-
 async def getProfile(userId):
     connection = await get_connection()
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
-            sql = "SELECT name, email, `call`, type FROM users WHERE id = %s"
+            sql = "SELECT name, email, `call`, type FROM users WHERE idx = %s"
             await cursor.execute(sql, (userId,))
             result = await cursor.fetchall()
             result = result[0]

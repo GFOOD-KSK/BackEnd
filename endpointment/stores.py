@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter
 import schema.stores
 import crud.stores
@@ -10,13 +11,13 @@ async def get_stores(neLat: float, neLng: float, swLat: float, swLng: float, bus
     result = await crud.stores.getStores(neLat, neLng, swLat, swLng, business_type)
     return result
 
-@router.get("/{store_id}/menu", response_model=schema.stores.MenuItem)
+@router.get("/{store_id}/menu", response_model=List[schema.stores.MenuOverlayItem])
 async def get_store_menu(store_id: int):
-    result = await crud.stores.getStoresMenu(store_id)
-    return result
+    return await crud.stores.getStoresMenu(store_id)
+     
 
 
-@router.get("/{food_type}", response_model=schema.stores.SearchItem)
+@router.get("/{food_type}", response_model=List[schema.stores.SearchItem])
 async def get_stores_item(food_type: str):
-    result = await crud.stores.getStoresItem(food_type)
-    return result
+    return await crud.stores.getStoresItem(food_type)
+     
