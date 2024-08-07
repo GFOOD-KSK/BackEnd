@@ -1,5 +1,4 @@
-import datetime
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 class User(BaseModel): # 기본 모델
     id: int
     kakao_id: int

@@ -1,5 +1,4 @@
-from db import dummy
-from typing import List, Optional
+from typing import List
 from fastapi import APIRouter
 import crud.users
 import schema.users
@@ -8,8 +7,8 @@ router = APIRouter()
 
 @router.get("/{userId}", response_model =schema.users.getUserProfile)  # 더미데이터 -> DB로 변경
 async def get_profile(userId: int):
-    result = await crud.users.getProfile(userId)
-    return result
+    return await crud.users.getProfile(userId)
+
 
 
 @router.post("")  # 세부구현
@@ -20,8 +19,8 @@ async def create_profile(data: schema.users.postUser):
 
 @router.get("/{userId}/reservation", response_model = List[schema.users.getReservation])  # 더미데이터 -> DB로 변경
 async def get_reservation(userId: int):
-    result = await crud.users.getReservation(userId)
-    return result
+    return await crud.users.getReservation(userId)
+
 
 
 @router.post("/{userId}/reservation")  # 세부구현

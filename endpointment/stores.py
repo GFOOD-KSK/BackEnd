@@ -1,8 +1,4 @@
-import aiomysql
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-
-from db.session import get_connection
+from fastapi import APIRouter
 import schema.stores
 import crud.stores
 
@@ -15,12 +11,12 @@ async def get_stores(neLat: float, neLng: float, swLat: float, swLng: float, bus
     return result
 
 @router.get("/{store_id}/menu", response_model=schema.stores.MenuItem)
-async def get_store_menu(store_id: int, detailed: Optional[bool] = Query(False)):
+async def get_store_menu(store_id: int):
     result = await crud.stores.getStoresMenu(store_id)
     return result
 
 
 @router.get("/{food_type}", response_model=schema.stores.SearchItem)
-async def get_stores_item(food_type: str, detailed: Optional[bool] = Query(False)):
+async def get_stores_item(food_type: str):
     result = await crud.stores.getStoresItem(food_type)
     return result
