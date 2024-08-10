@@ -94,3 +94,27 @@ async def getStoresItem(food_type):
 
     finally:
         connection.close()
+
+
+async def getUsersReservation(store_id):
+    connection = await get_connection()
+    try:
+        async with connection.cursor(aiomysql.DictCursor) as cursor:
+            sql = """
+                    SELECT idx, user_idx, reservation_at
+                    FROM reservations
+                    WHERE store_idx = %s
+                """
+            await cursor.execute(sql, (store_id,))
+            result = await cursor.fetchall()
+
+        if not result:
+                raise HTTPException(status_code=404, detail="user not found")
+
+        return [
+            {"reservation_idx": item["idx"], "user_idx": item["user_idx"], "reservation_at": item["reservation_at"] }
+            for item in result
+        ]    
+    
+    finally:
+        connection.close()

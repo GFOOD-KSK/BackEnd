@@ -25,7 +25,7 @@ async def createUser(data):
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
             sql = """
-            INSERT INTO users (kakao_id, name, email, `call`, type, createdAt) 
+            INSERT INTO users (kakao_id, name, email, `call`, type, created_at) 
             VALUES (%s, %s, %s, %s, %s, %s)
             """
             nowTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -33,8 +33,11 @@ async def createUser(data):
 
             await connection.commit()
             
-            return "success"
+            await cursor.execute("SELECT LAST_INSERT_ID()")
+            
+            last_id = await cursor.fetchone()
 
+            return last_id
     finally:
         connection.close()
 
@@ -43,7 +46,7 @@ async def getReservation(userId):
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
             sql = """
-                    SELECT stores.name AS store_name, stores.business_type AS business_type, stores.food_type As food_type, reservations.reservationAt AS reservationAt
+                    SELECT stores.name AS store_name, stores.business_type AS business_type, stores.food_type As food_type, reservations.reservation_at AS reservation_at
                     FROM reservations
                     JOIN stores ON reservations.store_idx = stores.idx
                     JOIN users ON users.idx = reservations.user_idx
@@ -56,7 +59,7 @@ async def getReservation(userId):
                 raise HTTPException(status_code=404, detail="user not found")
 
         return [
-            {"store_name": item["store_name"], "business_type": item["business_type"], "food_type": item["food_type"], "reservationAt": item["reservationAt"] }
+            {"store_name": item["store_name"], "business_type": item["business_type"], "food_type": item["food_type"], "reservation_at": item["reservation_at"] }
             for item in result
         ]    
     
@@ -69,7 +72,7 @@ async def createReservation(data):
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
             sql = """
-            INSERT INTO reservations (user_Idx, store_idx, reservationAt) 
+            INSERT INTO reservations (user_Idx, store_idx, reservation_at) 
             VALUES (%s, %s, %s)
             """
             nowTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -77,7 +80,11 @@ async def createReservation(data):
 
             await connection.commit()
             
-            return "success"
+            await cursor.execute("SELECT LAST_INSERT_ID()")
+            
+            last_id = await cursor.fetchone()
+
+            return last_id
 
     finally:
         connection.close()
