@@ -5,7 +5,6 @@ from db.session import get_connection
 from data_mapping.stores import type_map
 
 async def getStores(neLat: float, neLng: float, swLat: float, swLng: float, business_type: str):
-    business_type = type_map[business_type]
     connection = await get_connection()
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
@@ -52,22 +51,25 @@ async def getStoresMenu(store_id):
     connection = await get_connection()
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
-            sql = "SELECT name, price FROM menus WHERE store_idx = %s"
+            sql = """
+                    SELECT stores.name AS store_name, menus.name AS menu_name, stores.lat AS x_coordinate, stores.lng AS y_coordinate, stores.food_type AS food_type, stores.business_type AS business_type
+                    FROM stores
+                    JOIN menus ON stores.idx = menus.store_idx
+                    WHERE stores.idx = %s
+                """
             await cursor.execute(sql, (store_id,))
             result = await cursor.fetchall()
-
+            print(result)
         if not result:
             raise HTTPException(status_code=404, detail="Store not found")
 
         return [
-            {"name": menu["name"], "price": menu["price"]}
-            for menu in result
+            {"store_name": temp["store_name"], "menu_name": temp["menu_name"], "x_coordinate": temp["x_coordinate"], "y_coordinate": temp["y_coordinate"], "food_type": temp["food_type"], "business_type": temp["business_type"]}
+            for temp in result
         ]
 
     finally:
         connection.close()
-
-
 async def getStoresItem(food_type):
     connection = await get_connection()
     try:

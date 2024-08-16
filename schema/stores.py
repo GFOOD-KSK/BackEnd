@@ -18,8 +18,12 @@ class MenuItem(BaseModel):
     food_type : str
 
 class MenuOverlayItem(BaseModel): # 오버레이 조회
-    name: str
-    price: int
+    store_name: str
+    menu_name: str
+    x_coordinate: float
+    y_coordinate: float
+    food_type: str
+    business_type: str
 
 class SearchItem(BaseModel):
     store_name: str

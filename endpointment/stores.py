@@ -6,7 +6,7 @@ import crud.stores
 router = APIRouter()
 
 
-@router.get("", response_model=schema.stores.Store)
+@router.get("", response_model=List[schema.stores.Store])
 async def get_stores(neLat: float, neLng: float, swLat: float, swLng: float, business_type: str):
     return await crud.stores.getStores(neLat, neLng, swLat, swLng, business_type)
 

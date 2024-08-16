@@ -1,7 +1,8 @@
 from typing import List
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 import crud.users
 import schema.users
+import re
 router = APIRouter()
 
 
@@ -13,6 +14,8 @@ async def get_profile(userId: int):
 
 @router.post("")  # 세부구현
 async def create_profile(data: schema.users.postUser):
+    if re.match("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", data.email): raise HTTPException(status_code=400, detail="Invalid Requests")
+    if re.match("^\d{3}-\d{4}-\d{3}$", data.call): raise HTTPException(status_code=400, detail="Invalid Requests")
     return await crud.users.createUser(data)
 
 
