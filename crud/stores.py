@@ -8,23 +8,16 @@ async def getStores(neLat: float, neLng: float, swLat: float, swLng: float, busi
     connection = await get_connection()
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
-            sql = "SELECT *\
-                FROM stores\
-                WHERE business_type = %s and MBRContains(\
-                    ST_GeomFromText(\
-                        CONCAT('POLYGON((', \
-                           %s, ' ', %s, ', ', \
-                           %s, ' ', %s, ', ', \
-                           %s, ' ', %s, ', ', \
-                           %s, ' ', %s, ', ', \
-                           %s, ' ', %s, '))'\
-                        )\
-                    ), \
-                    location\
-                );\
-            "
+            sql = """
+                SELECT idx, name, lat, lng, business_type
+                FROM stores 
+                WHERE business_type = %s 
+                  AND lat BETWEEN %s AND %s
+                  AND lng BETWEEN %s AND %s
+                  
+            """
             print(business_type)
-            await cursor.execute(sql, (business_type, swLng, swLat, neLng, swLat, neLng, neLat, swLng, neLat, swLng, swLat))
+            await cursor.execute(sql, (business_type, swLat, neLat, swLng, neLng))
             result = await cursor.fetchall()
             if result:
                 stores = []
