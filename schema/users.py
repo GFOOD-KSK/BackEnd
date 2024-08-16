@@ -13,7 +13,7 @@ class getUserProfile(BaseModel): # 프로필 모델
     name: str
     email: str
     call: str
-    type: str
+    idx: int
    
 class postUser(BaseModel): # 유저 생성 모델
     kakao_id: int

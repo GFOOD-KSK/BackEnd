@@ -7,7 +7,7 @@ async def getProfile(userId):
     connection = await get_connection()
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
-            sql = "SELECT name, email, `call`, type FROM users WHERE idx = %s"
+            sql = "SELECT name, email, `call`, idx FROM users WHERE idx = %s"
             await cursor.execute(sql, (userId,))
             result = await cursor.fetchall()
             result = result[0]
@@ -15,7 +15,7 @@ async def getProfile(userId):
         if not result:
             raise HTTPException(status_code=404, detail="user not found")
 
-        return {"name": result["name"], "email": result["email"], "call": result["call"], "type": result["type"] }
+        return {"name": result["name"], "email": result["email"], "call": result["call"], "idx": result["idx"] }
             
     finally:
         connection.close()
@@ -54,12 +54,12 @@ async def getReservation(userId):
                 """
             await cursor.execute(sql, (userId,))
             result = await cursor.fetchall()
-
+            print(result)
         if not result:
                 raise HTTPException(status_code=404, detail="user not found")
 
         return [
-            {"store_name": item["store_name"], "business_type": item["business_type"], "food_type": item["food_type"], "reservation_at": item["reservation_at"] }
+            {"store_name": item["store_name"], "business_type": item["business_type"], "food_type": item["food_type"], "reservationAt": item["reservation_at"] }
             for item in result
         ]    
     
