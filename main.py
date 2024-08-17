@@ -1,8 +1,13 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from endpointment import stores, users
+from starlette.middleware.sessions import SessionMiddleware
+
+from endpointment import stores, users, login
 
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key='1412', same_site="None", https_only=False)
 
 origins = [
     "http://localhost",
@@ -22,3 +27,4 @@ app.add_middleware(
 
 app.include_router(stores.router, prefix="/stores", tags=["stores"])
 app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(login.router, prefix="/auth", tags=["login"])

@@ -29,17 +29,17 @@ async def createUser(data):
             VALUES (%s, %s, %s, %s, %s, %s)
             """
             nowTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            await cursor.execute(sql, (data.kakao_id, data.name, data.email, data.call, data.type, nowTime ))
+            await cursor.execute(sql, (data.kakao_id, data.name, data.email, data.call, 'a', nowTime ))
 
             await connection.commit()
             
             await cursor.execute("SELECT LAST_INSERT_ID()")
             
             last_id = await cursor.fetchone()
-
-            return last_id
     finally:
         connection.close()
+    return last_id
+
 
 async def getReservation(userId):
     connection = await get_connection()

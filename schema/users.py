@@ -20,7 +20,6 @@ class postUser(BaseModel): # 유저 생성 모델
     name: str
     email: str
     call: str
-    type: str
 
 class Reservation(BaseModel): # 예약 기본 모델
     id: int

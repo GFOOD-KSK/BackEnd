@@ -7,6 +7,8 @@ KAKAO_REDIRECT_URI = 'http://127.0.0.1:8002/auth/kakao/callback'
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from typing import List, Optional
+from crud.login import getProfile
+
 import requests
 
 router = APIRouter()
@@ -38,19 +40,29 @@ async def kakao_callback(request: Request, code: str):
         user_info_response = requests.get(user_info_url, headers=user_info_headers)
         user_info = user_info_response.json()
 
-        # 사용자 정보를 세션에 저장
-        request.session['user'] = user_info
-        print(request.session)
+        try:
+            res = await getProfile(user_info['id'])
+            # 사용자 정보를 세션에 저장
+            request.session['user'] = user_info
+            print(request.session['user'])
+            # 리다이렉트 또는 사용자 정보 반환
+            return RedirectResponse(url=f'http://127.0.0.1:5500/index.html?user_id={res}')
+        except Exception as e:  # 로그인 실패. 회원가입으로 리디렉션
+            return RedirectResponse(url=f'http://127.0.0.1:5500/signup.html?kakao_id={user_info["id"]}')
 
-        # 리다이렉트 또는 사용자 정보 반환
-        return RedirectResponse(url='http://127.0.0.1:5500/index.html')
-    else:
-        return {"error": "Failed to get access token"}
+    else:  #카카오 로그인 실패
+        return RedirectResponse(url='http://127.0.0.1:5500/start.html')
 
 
 @router.get('/login')
-async def login():
-    return {}
+async def login(request: Request):
+    request.session['user'] = await getProfile(364263132259)
+    print("Hello", request.session)
+    return request.session['user']
+
+@router.get("/test")
+async def test(request: Request):
+    print(request.session['user'])
 
 @router.get("/logout")
 async def logout(request: Request):
