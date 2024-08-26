@@ -29,6 +29,7 @@ class SearchItem(BaseModel):
     store_name: str
     menu_name: str
     price: float
+    store_idx: int
 
 class getUserReservation(BaseModel):
     reservation_idx : int

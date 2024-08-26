@@ -83,7 +83,7 @@ async def getStoresItem(food_type):
                 raise HTTPException(status_code=404, detail="No matching stores found")
 
             return [
-                {"store_name": menu["store_name"], "menu_name": menu["menu_name"], "price": menu["price"]}
+                {"store_name": menu["store_name"], "menu_name": menu["menu_name"], "price": menu["price"], 'store_idx': menu["idx"]}
                 for menu in result
             ]
 
