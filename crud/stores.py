@@ -70,7 +70,7 @@ async def getStoresItem(food_type):
         async with connection.cursor(aiomysql.DictCursor) as cursor:
             # 주어진 food_type에 따라 필터링
             sql = """
-                    SELECT stores.name AS store_name, menus.name AS menu_name, menus.price
+                    SELECT stores.name AS store_name, menus.name AS menu_name, menus.price, stores.idx
                     FROM stores
                     JOIN menus ON stores.idx = menus.store_idx
                     WHERE menus.food_type = %s
