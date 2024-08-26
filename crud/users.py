@@ -90,3 +90,18 @@ async def createReservation(data):
         connection.close()
 
 
+async def deleteReservation(reservationId):
+    connection = await get_connection()
+    try:
+        async with connection.cursor(aiomysql.DictCursor) as cursor:
+            sql = """
+               DELETE FROM reservations
+               WHERE idx = %s
+               """
+
+            await cursor.execute(sql, (reservationId,))
+            await connection.commit()
+            return {"message": "reservation deleted"}
+
+    finally:
+        connection.close()

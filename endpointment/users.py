@@ -33,4 +33,6 @@ async def create_reservation(data: schema.users.postReservation):
 @router.get("/{userId}/reservation", response_model = List[schema.users.getReservation])  # 더미데이터 -> DB로 변경
 async def get_reservation(userId: int):
     return await crud.users.getReservation(userId)
-
+@router.delete("/{userId}/reservation")
+async def delete_reservation(userId: int):
+    return await crud.users.deleteReservation(userId)
