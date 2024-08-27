@@ -41,30 +41,41 @@ async def createUser(data):
     return last_id
 
 
-async def getReservation(userId):
+async def getReservation(userId: int):
     connection = await get_connection()
     try:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
             sql = """
-                    SELECT stores.name AS store_name, stores.business_type AS business_type, stores.food_type As food_type, reservations.reservation_at AS reservation_at
-                    FROM reservations
-                    JOIN stores ON reservations.store_idx = stores.idx
-                    JOIN users ON users.idx = reservations.user_idx
-                    WHERE users.idx = %s
-                """
+                SELECT reservations.idx AS reservation_id,  # 예약 번호를 선택합니다
+                       stores.name AS store_name,
+                       stores.business_type AS business_type,
+                       stores.food_type AS food_type,
+                       reservations.reservation_at AS reservation_at
+                FROM reservations
+                JOIN stores ON reservations.store_idx = stores.idx
+                JOIN users ON users.idx = reservations.user_idx
+                WHERE users.idx = %s
+            """
             await cursor.execute(sql, (userId,))
             result = await cursor.fetchall()
-            print(result)
+            
         if not result:
-                raise HTTPException(status_code=404, detail="user not found")
+            raise HTTPException(status_code=404, detail="Reservations not found")
 
         return [
-            {"store_name": item["store_name"], "business_type": item["business_type"], "food_type": item["food_type"], "reservationAt": item["reservation_at"] }
+            {
+                "reservationId": item["reservation_id"],  # 예약 번호
+                "store_name": item["store_name"],
+                "business_type": item["business_type"],
+                "food_type": item["food_type"],
+                "reservationAt": item["reservation_at"]
+            }
             for item in result
         ]    
     
     finally:
         connection.close()
+
 
 
 async def createReservation(data):

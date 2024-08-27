@@ -28,11 +28,13 @@ class Reservation(BaseModel): # 예약 기본 모델
     reservationAt: str
 
  
-class getReservation(BaseModel): # 예약 확인 모델
+class getReservation(BaseModel):  # 예약 확인 모델
+    reservationId: int  # 추가된 필드
     store_name: str
-    business_type : str
-    food_type : str
+    business_type: str
+    food_type: str
     reservationAt: str
+
     
 
 class postReservation(BaseModel): # 예약 생성 모델

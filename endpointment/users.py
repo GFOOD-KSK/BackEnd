@@ -30,9 +30,15 @@ async def create_reservation(data: schema.users.postReservation):
     return await crud.users.createReservation(data)
 
 
-@router.get("/{userId}/reservation", response_model = List[schema.users.getReservation])  # 더미데이터 -> DB로 변경
+@router.get("/{userId}/reservation", response_model=List[schema.users.getReservation])
 async def get_reservation(userId: int):
-    return await crud.users.getReservation(userId)
-@router.delete("/{userId}/reservation")
-async def delete_reservation(userId: int):
-    return await crud.users.deleteReservation(userId)
+    reservations = await crud.users.getReservation(userId)
+    return reservations
+
+@router.delete("/{userId}/reservation/{reservationId}")
+async def delete_reservation(userId: int, reservationId: int):
+    result = await crud.users.deleteReservation(reservationId)
+    if result:
+        return {"message": "예약이 성공적으로 삭제되었습니다."}
+    else:
+        raise HTTPException(status_code=404, detail="예약을 찾을 수 없습니다.")
